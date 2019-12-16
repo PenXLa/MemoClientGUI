@@ -7,7 +7,7 @@ public:
 	CTime m_TDate;
 	CTime m_Time;
 	CString m_strBody;
-	Schedule* sch;
+	Schedule* sch = NULL;
 	CMyMem()
 	{
 		memset(&m_TDate, 0, sizeof(m_TDate));
@@ -27,7 +27,6 @@ public:
 public:
 	CMyMemList m_memList;
 	POSITION m_pos;
-	BOOL is_old;
 public:
 	virtual BOOL InitInstance();
 	virtual void Serialize(CArchive& ar);

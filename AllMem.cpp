@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Mem.h"
 #include "AllMem.h"
+#include "MemDlg.h"
 
 
 #include <iostream>
@@ -33,12 +34,23 @@ BEGIN_MESSAGE_MAP(CAllMem, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_DEL, OnButtonDel)
 	ON_BN_CLICKED(IDC_BUTTON_REMOVEALL, OnButtonRemoveall)
 	ON_BN_CLICKED(ID_CANCEL, OnCancel)
+	ON_BN_CLICKED(ID_BUT_NEW, &CAllMem::OnBnClickedButNew)
 END_MESSAGE_MAP()
+
 
 BOOL CAllMem::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	CMemApp* pApp = (CMemApp*)AfxGetApp();
+	pApp->onRead();
+
+	refresh();
+	return TRUE;
+}
+
+void CAllMem::refresh() {
+	CMemApp* pApp = (CMemApp*)AfxGetApp();
+
 	m_list.SetBkColor(RGB(255, 255, 255));
 	m_list.SetTextBkColor(RGB(200, 200, 0));
 	m_list.SetTextColor(RGB(0, 0, 0));
@@ -73,6 +85,7 @@ BOOL CAllMem::OnInitDialog()
 
 	nCount = (WORD)pApp->m_memList.GetCount();
 	pos = pApp->m_memList.GetHeadPosition();
+	m_list.DeleteAllItems();
 	for (int k = 0; k < nCount && pos != NULL; k++)
 	{
 		CMyMem* pMem = pApp->m_memList.GetNext(pos);
@@ -81,7 +94,6 @@ BOOL CAllMem::OnInitDialog()
 		m_list.SetItemText(k, 0, my_date);
 		m_list.SetItemText(k, 1, pMem->m_strBody);
 	}
-	return TRUE;
 }
 
 void CAllMem::OnButtonDel()
@@ -145,8 +157,10 @@ void CAllMem::OnOK()
 		nSel = m_list.GetNextSelectedItem(pos1);
 		pos = pApp->m_memList.FindIndex(nSel);
 		pApp->m_pos = pos;
-		pApp->is_old = TRUE;
-		CDialog::OnOK();
+		
+		CMemDlg dlg(pApp->m_memList.GetAt(pos));
+		if (IDOK == dlg.DoModal())
+			refresh();
 	}
 }
 
@@ -165,4 +179,12 @@ void CAllMem::OnButtonRemoveall()
 	DataBase::clearSchedule();
 	schedules.clear();
 	if (loggedin) DataBase::sync_clear();
+}
+
+
+void CAllMem::OnBnClickedButNew()
+{
+	CMemDlg dlg;
+	if (IDOK == dlg.DoModal())
+		refresh();
 }

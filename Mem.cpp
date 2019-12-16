@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Mem.h"
+#include "AllMem.h"
 #include "MemDlg.h"
 
 #include <iostream>
@@ -21,7 +22,6 @@ END_MESSAGE_MAP()
 
 CMemApp::CMemApp()
 {
-	is_old = FALSE;
 	m_pos = NULL;
 }
 
@@ -36,7 +36,7 @@ BOOL CMemApp::InitInstance()
 
 	AfxEnableControlContainer();
 
-	CMemDlg dlg;
+	CAllMem dlg;
 	m_pMainWnd = &dlg;
 	int nResponse = dlg.DoModal();
 	return FALSE;
@@ -64,6 +64,7 @@ void CMemApp::Serialize(CArchive& ar)
 	}
 	else
 	{
+		m_memList.RemoveAll();
 		ar >> nCount;
 		while (nCount-- > 0)
 		{
@@ -103,6 +104,6 @@ void CMemApp::onRead()
 CString CMemApp::TimetoCString(CTime& date, CTime& time)
 {
 	char str[30];
-	sprintf(str, "%d年%d月%d日 %d:%02d", date.GetYear(), date.GetMonth(), date.GetDay(), date.GetDay(), time.GetMinute());
+	sprintf(str, "%d年%d月%d日 %d:%02d", date.GetYear(), date.GetMonth(), date.GetDay(), time.GetHour(), time.GetMinute());
 	return (CString)str;
 }

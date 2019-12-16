@@ -17,10 +17,11 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-CMemDlg::CMemDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CMemDlg::IDD, pParent)
+CMemDlg::CMemDlg(CMyMem* mem)
+	: CDialog(CMemDlg::IDD, NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	this->mem = mem;
 }
 
 void CMemDlg::DoDataExchange(CDataExchange* pDX)
@@ -34,16 +35,8 @@ void CMemDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CMemDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_COMMAND(ID_MENU_ABOUT, OnMenuAbout)
-	ON_COMMAND(ID_MENU_NEW, OnMenuNew)
-	ON_COMMAND(ID_MENU_SAVE, OnButtonSave)
-	ON_COMMAND(ID_MENU_SHOWALL, OnButtonManger)
-	ON_COMMAND(ID_MENU_EXIT, OnOK)
-	ON_COMMAND(ID_ABOUT, OnMenuAbout)
-	ON_COMMAND(ID_NEW, OnMenuNew)
-	ON_COMMAND(ID_SAVE, OnButtonSave)
-	ON_COMMAND(ID_SHOW, OnButtonManger)
-	ON_COMMAND(ID_MENU_TEST, &CMemDlg::OnTest)
+	ON_BN_CLICKED(IDC_EDIT_OK, &CMemDlg::OnBnClickedEditOk)
+	ON_BN_CLICKED(IDC_CANCEL_EDIT, &CMemDlg::OnBnClickedCancelEdit)
 END_MESSAGE_MAP()
 
 BOOL CMemDlg::OnInitDialog()
@@ -58,39 +51,11 @@ BOOL CMemDlg::OnInitDialog()
 	m_date.GetTime(&sysTime);
 	
 
-	pApp->onRead();
-	if (!m_wndToolBar.Create(this) || !m_wndToolBar.LoadToolBar(IDR_TOOLBAR_MAIN))
-	{
-		TRACE0("Failed to Create Memor Toolbar\n");
-		EndDialog(IDCANCEL);
+	if (mem) {
+		m_date.SetTime(&mem->m_TDate);
+		m_time.SetTime(&mem->m_Time);
+		m_body.SetWindowText(mem->m_strBody);
 	}
-
-	CRect rcClientOld;
-	CRect rcClientNew;
-	GetClientRect(rcClientOld);
-	RepositionBars(AFX_IDW_CONTROLBAR_FIRST, AFX_IDW_CONTROLBAR_LAST, 0, reposQuery, rcClientNew);
-
-	CPoint ptOffset(rcClientNew.left - rcClientOld.left,
-		rcClientNew.top - rcClientOld.top);
-
-	CRect rcChild;
-	CWnd* pwndChild = GetWindow(GW_CHILD);
-	while (pwndChild)
-	{
-		pwndChild->GetWindowRect(rcChild);
-		ScreenToClient(rcChild);
-		rcChild.OffsetRect(ptOffset);
-		pwndChild->MoveWindow(rcChild, FALSE);
-		pwndChild = pwndChild->GetNextWindow();
-	}
-
-	CRect rcWindow;
-	GetWindowRect(rcWindow);
-	rcWindow.right += rcClientOld.Width() - rcClientNew.Width();
-	rcWindow.bottom += rcClientOld.Height() - rcClientNew.Height();
-	MoveWindow(rcWindow, FALSE);
-
-	RepositionBars(AFX_IDW_CONTROLBAR_FIRST, AFX_IDW_CONTROLBAR_LAST, 0);
 	return TRUE;
 }
 
@@ -122,7 +87,14 @@ HCURSOR CMemDlg::OnQueryDragIcon()
 	return (HCURSOR)m_hIcon;
 }
 
-void CMemDlg::OnButtonSave()
+
+
+
+
+
+
+
+void CMemDlg::OnBnClickedEditOk()
 {
 	CTime mm_date, mm_time;
 	memset(&mm_date, 0, sizeof(mm_date));
@@ -132,10 +104,11 @@ void CMemDlg::OnButtonSave()
 	m_date.GetTime(mm_date);
 	m_time.GetTime(mm_time);
 	m_body.GetWindowText(mm_body);
-	
 
 
-	tm ddl; Schedule *sch = new Schedule;//内存中创建新事项
+
+	tm ddl; Schedule *sch = mem ? mem->sch : new Schedule;
+
 	strcpy(sch->name, ((std::string)mm_body.GetBuffer()).c_str());
 	ddl.tm_year = mm_date.GetYear();
 	ddl.tm_mon = mm_date.GetMonth();
@@ -146,9 +119,17 @@ void CMemDlg::OnButtonSave()
 	ddl.tm_year -= 1900; --ddl.tm_mon;
 	sch->endTime = mktime(&ddl);
 	sch->lastEdit = time(0);
-	schedules.push_back(sch);
-	DataBase::addSchedule(*sch);//放到文件中
-	if (loggedin) DataBase::sync_add(*sch);//服务器同步
+	sch->alerted = false;
+	if (mem) {
+		DataBase::editSchedule(sch->sid, *sch);//放到文件中
+		if (loggedin) DataBase::sync_edit(sch->sid, *sch);//服务器同步
+	}
+	else {
+		schedules.push_back(sch);
+		DataBase::addSchedule(*sch);//放到文件中
+		if (loggedin) DataBase::sync_add(*sch);//服务器同步
+	}
+
 
 
 	CMyMem* pMem = new CMyMem;
@@ -157,7 +138,7 @@ void CMemDlg::OnButtonSave()
 	pMem->m_strBody = mm_body;
 	pMem->m_Time = mm_time;
 	pMem->sch = sch;
-	if (pApp->is_old)
+	if (mem)
 	{
 		POSITION pos;
 		pos = pApp->m_pos;
@@ -167,64 +148,16 @@ void CMemDlg::OnButtonSave()
 	{
 		pApp->m_memList.AddTail(pMem);
 		pApp->m_pos = pApp->m_memList.GetTailPosition();
-		pApp->is_old = TRUE;
 	}
 
 	pApp->onSave();
 
 	m_body.SetModify(FALSE);
-}
-
-void CMemDlg::OnButtonManger()
-{
-	POSITION pos;
-	CAllMem alldlg;
-	CMemApp* pApp = (CMemApp*)AfxGetApp();
-	if (IDOK == alldlg.DoModal())
-	{
-		pos = pApp->m_pos;
-		CMyMem* pMem = pApp->m_memList.GetAt(pos);
-		m_date.SetTime(&pMem->m_TDate);
-		m_time.SetTime(&pMem->m_Time);
-		m_body.SetWindowText(pMem->m_strBody);
-	}
-}
-
-void CMemDlg::OnMenuAbout()
-{
-	CAbooutMe aboutdlg;
-	aboutdlg.DoModal();
-}
-
-void CMemDlg::OnOK()
-{
-	if (m_body.GetModify())
-	{
-		int flag = MessageBox("是否保存？", "提示", MB_ICONQUESTION | MB_YESNOCANCEL);
-		if (IDYES == flag)
-		{
-			OnButtonSave();
-			CDialog::OnOK();
-		}
-		else if (IDNO == flag)
-		{
-			CDialog::OnOK();
-		}
-	}
-	else
-		CDialog::OnOK();
-}
-
-void CMemDlg::OnMenuNew()
-{
-	CMemApp* pApp = (CMemApp*)AfxGetApp();
-	pApp->is_old = FALSE;
-	pApp->m_pos = NULL;
-	m_body.SetWindowText("");
+	CDialog::OnOK();
 }
 
 
-void CMemDlg::OnTest()
+void CMemDlg::OnBnClickedCancelEdit()
 {
-
+	CDialog::OnCancel();
 }

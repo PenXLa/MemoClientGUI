@@ -3,12 +3,13 @@
 class CMemDlg : public CDialog
 {
 public:
-	CMemDlg(CWnd* pParent = NULL);
+	CMemDlg(CMyMem* mem = NULL);
 	CToolBar m_wndToolBar;
 	enum { IDD = IDD_MEM_DIALOG };
 	CEdit	m_body;
 	CDateTimeCtrl	m_date;
 	CDateTimeCtrl	m_time;
+	CMyMem* mem = NULL;//如果为空，是新建，不为空是编辑
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);
 
@@ -17,12 +18,8 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	afx_msg void OnMenuAbout();
-	afx_msg void OnMenuNew();
-	afx_msg void OnOK();
-	afx_msg void OnButtonSave();
-	afx_msg void OnButtonManger();
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnTest();
+	afx_msg void OnBnClickedEditOk();
+	afx_msg void OnBnClickedCancelEdit();
 };

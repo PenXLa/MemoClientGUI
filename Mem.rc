@@ -72,19 +72,20 @@ IDR_MAINFRAME           ICON                    "res\\Feather2.ico"
 // Dialog
 //
 
-IDD_MEM_DIALOG DIALOGEX 0, 0, 370, 232
+IDD_MEM_DIALOG DIALOGEX 0, 0, 370, 163
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_STATICEDGE | WS_EX_APPWINDOW
 CAPTION "云备忘录"
-MENU IDR_MENU_MAIN
 FONT 9, "宋体", 0, 0, 0x1
 BEGIN
     GROUPBOX        "",IDC_STATIC,7,0,356,27
     LTEXT           "开始日期",IDC_STATIC,15,13,33,8
     CONTROL         "DateTimePicker1",IDC_DATETIMEPICKER1,"SysDateTimePick32",DTS_RIGHTALIGN | WS_TABSTOP,53,9,61,15,WS_EX_STATICEDGE
-    GROUPBOX        "",IDC_STATIC,7,29,356,196
-    EDITTEXT        IDC_EDIT_BODY,7,33,356,192,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL,WS_EX_CLIENTEDGE
+    GROUPBOX        "",IDC_STATIC,7,0,356,156
+    EDITTEXT        IDC_EDIT_BODY,7,33,356,96,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL,WS_EX_CLIENTEDGE
     CONTROL         "",IDC_TIME,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,121,9,61,15,WS_EX_STATICEDGE
+    DEFPUSHBUTTON   "确定",IDC_EDIT_OK,292,137,71,19
+    PUSHBUTTON      "取消",IDC_CANCEL_EDIT,210,137,71,19
 END
 
 IDD_DIALOG1 DIALOGEX 0, 0, 281, 165
@@ -92,12 +93,12 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "所有备忘"
 FONT 9, "宋体", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "查看",IDOK,147,147,50,14,BS_FLAT
+    PUSHBUTTON      "编辑",IDOK,147,147,50,14,BS_FLAT
     GROUPBOX        "备忘记录",IDC_STATIC,7,2,267,141
     CONTROL         "List1",IDC_LIST_MEM,"SysListView32",LVS_REPORT | WS_BORDER | WS_TABSTOP,13,11,255,126
-    PUSHBUTTON      "删除",IDC_BUTTON_DEL,7,147,50,14,BS_FLAT
-    PUSHBUTTON      "全部删除",IDC_BUTTON_REMOVEALL,78,147,50,14,BS_FLAT
-    PUSHBUTTON      "退出",ID_CANCEL,211,147,50,14,BS_FLAT
+    PUSHBUTTON      "删除",IDC_BUTTON_DEL,82,147,50,14,BS_FLAT
+    PUSHBUTTON      "全部删除",IDC_BUTTON_REMOVEALL,15,147,50,14,BS_FLAT
+    DEFPUSHBUTTON   "新建",ID_BUT_NEW,215,147,50,14,BS_FLAT
 END
 
 IDD_DIALOG_ABOUT DIALOGEX 0, 0, 225, 77
@@ -160,7 +161,7 @@ BEGIN
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 363
-        BOTTOMMARGIN, 225
+        BOTTOMMARGIN, 156
     END
 
     IDD_DIALOG1, DIALOG
@@ -180,49 +181,6 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Menu
-//
-
-IDR_MENU_MAIN MENU
-BEGIN
-    POPUP "系统"
-    BEGIN
-        MENUITEM "所有备忘",                        ID_MENU_SHOWALL
-        MENUITEM "新建备忘",                        ID_MENU_NEW
-        MENUITEM "保存",                          ID_MENU_SAVE
-        MENUITEM "关于",                          ID_MENU_ABOUT
-        MENUITEM SEPARATOR
-        MENUITEM "退出",                          ID_MENU_EXIT
-        MENUITEM "test",                        ID_MENU_TEST
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Toolbar
-//
-
-IDR_TOOLBAR_MAIN TOOLBAR 18, 15
-BEGIN
-    BUTTON      ID_NEW
-    BUTTON      ID_SAVE
-    BUTTON      ID_SHOW
-    SEPARATOR
-    BUTTON      ID_ABOUT
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDR_TOOLBAR_MAIN        BITMAP                  "res\\toolbar1.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
