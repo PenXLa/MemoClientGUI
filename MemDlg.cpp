@@ -150,7 +150,6 @@ void CMemDlg::OnBnClickedEditOk()
 		pApp->m_pos = pApp->m_memList.GetTailPosition();
 	}
 
-	pApp->onSave();
 
 	m_body.SetModify(FALSE);
 	CDialog::OnOK();

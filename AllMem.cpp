@@ -41,8 +41,6 @@ END_MESSAGE_MAP()
 BOOL CAllMem::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	CMemApp* pApp = (CMemApp*)AfxGetApp();
-	pApp->onRead();
 
 	refresh();
 	return TRUE;
@@ -116,7 +114,6 @@ void CAllMem::OnButtonDel()
 
 		pApp->m_memList.RemoveAt(pos);
 		m_list.DeleteItem(nSel);
-		pApp->onSave();
 	}
 	else
 	{
@@ -174,7 +171,6 @@ void CAllMem::OnButtonRemoveall()
 	CMemApp* pApp = (CMemApp*)AfxGetApp();
 	pApp->m_memList.RemoveAll();
 	m_list.DeleteAllItems();
-	pApp->onSave();
 
 	DataBase::clearSchedule();
 	schedules.clear();

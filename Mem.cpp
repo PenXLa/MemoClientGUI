@@ -42,64 +42,6 @@ BOOL CMemApp::InitInstance()
 	return FALSE;
 }
 
-void CMemApp::Serialize(CArchive& ar)
-{
-	POSITION pos;
-	WORD nCount;
-
-	if (ar.IsStoring())
-	{
-		nCount = (WORD)m_memList.GetCount();
-		ar << nCount;
-		pos = m_memList.GetHeadPosition();
-		while (pos != NULL)
-		{
-			CMyMem* pMem = m_memList.GetNext(pos);
-			ar << pMem->m_TDate;
-			ar << pMem->m_Time;
-			ar << pMem->m_strBody;
-			nCount--;
-		}
-		ASSERT(nCount == 0);
-	}
-	else
-	{
-		m_memList.RemoveAll();
-		ar >> nCount;
-		while (nCount-- > 0)
-		{
-			CMyMem* pMem = new CMyMem;
-			ar >> pMem->m_TDate;
-			ar >> pMem->m_Time;
-			ar >> pMem->m_strBody;
-			m_memList.AddTail(pMem);
-		}
-	}
-}
-
-void CMemApp::onSave()
-{
-	CFile file;
-	if (file.Open("mem.mem", CFile::modeCreate | CFile::modeWrite))
-	{
-		CArchive ar(&file, CArchive::store);
-		Serialize(ar);
-		ar.Close();
-		file.Close();
-	}
-}
-
-void CMemApp::onRead()
-{
-	CFile file;
-	if (file.Open("mem.mem", CFile::modeRead))
-	{
-		CArchive ar(&file, CArchive::load);
-		Serialize(ar);
-		ar.Close();
-		file.Close();
-	}
-}
 
 CString CMemApp::TimetoCString(CTime& date, CTime& time)
 {

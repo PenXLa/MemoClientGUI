@@ -6,6 +6,8 @@
 #include "../JSONLib/json.hpp"
 #include "../Net/ClientNetUtils.h"
 #include "../Utils/Utils.h"
+#include "../stdafx.h"
+#include "../Mem.h"
 
 int uid = 0;
 std::string passwd;
@@ -106,9 +108,19 @@ void DataBase::clearSchedule() {
 }
 
 void DataBase::loadSchedules() {
-    DataBase::traverseSchedule([](const Schedule& sch){
+	CMemApp* pApp = (CMemApp*)AfxGetApp();
+
+    DataBase::traverseSchedule([&pApp](const Schedule& sch){
         Schedule *sch2 = new Schedule(sch);
         schedules.push_back(sch2);
+
+		CMyMem* pMem = new CMyMem;
+		pMem->m_TDate = CTime(sch2->endTime);
+		pMem->m_Time = CTime(sch2->endTime);
+		pMem->m_strBody = (CString)sch2->name;
+		pMem->sch = sch2;
+		pApp->m_memList.AddTail(pMem);
+
         return true;
     });
 }

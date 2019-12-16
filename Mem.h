@@ -21,14 +21,11 @@ class CMemApp : public CWinApp
 public:
 	CMemApp();
 public:
-	void onSave();
-	void onRead();
 	CString CMemApp::TimetoCString(CTime& date, CTime& time);
 public:
 	CMyMemList m_memList;
 	POSITION m_pos;
 public:
 	virtual BOOL InitInstance();
-	virtual void Serialize(CArchive& ar);
 	DECLARE_MESSAGE_MAP()
 };
