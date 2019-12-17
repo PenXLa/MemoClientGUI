@@ -38,7 +38,8 @@ BOOL CMemApp::InitInstance()
 
 	CAllMem dlg;
 	m_pMainWnd = &dlg;
-	int nResponse = dlg.DoModal();
+	dlg.DoModal();
+
 	return FALSE;
 }
 

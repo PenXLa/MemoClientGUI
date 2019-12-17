@@ -2,6 +2,7 @@
 #include "Mem.h"
 #include "AllMem.h"
 #include "MemDlg.h"
+#include "LoginDlg.h"
 
 
 #include <iostream>
@@ -38,16 +39,16 @@ BEGIN_MESSAGE_MAP(CAllMem, CDialog)
 END_MESSAGE_MAP()
 
 
+
+void requestLogin() {
+	LoginDlg dlg;
+	dlg.DoModal();
+}
+
 BOOL CAllMem::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-
-	refresh();
-	return TRUE;
-}
-
-void CAllMem::refresh() {
-	CMemApp* pApp = (CMemApp*)AfxGetApp();
+	requestLogin();
 
 	m_list.SetBkColor(RGB(255, 255, 255));
 	m_list.SetTextBkColor(RGB(200, 200, 0));
@@ -77,10 +78,16 @@ void CAllMem::refresh() {
 		lvc.iSubItem = i;
 		m_list.InsertColumn(i, &lvc);
 	}
+
+	refresh();
+	return TRUE;
+}
+
+void CAllMem::refresh() {
 	WORD nCount;
 	POSITION pos;
 	CString my_date;
-
+	CMemApp* pApp = (CMemApp*)AfxGetApp();
 	nCount = (WORD)pApp->m_memList.GetCount();
 	pos = pApp->m_memList.GetHeadPosition();
 	m_list.DeleteAllItems();

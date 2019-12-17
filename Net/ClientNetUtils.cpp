@@ -17,7 +17,7 @@ bool connect2server() {
     server = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     SOCKADDR_IN addr;
 
-    // è¦è¿æ¥çš„åŸºç¡€ä¿¡æ¯
+    // ÒªÁ¬½ÓµÄ»ù´¡ĞÅÏ¢
     addr.sin_family = AF_INET;
     addr.sin_port = htons(PORT);
     addr.sin_addr.S_un.S_addr = inet_addr(SERVER_IP);
@@ -42,7 +42,7 @@ nlohmann::json receive() {
         if(size > 0){
             for (int i=0; i<size; ++i) que.emplace(buf[i]);
         } else {
-            //è¿æ¥å…³é—­
+            //Á¬½Ó¹Ø±Õ
             throw lost_connection();
         }
 
@@ -94,7 +94,7 @@ void sendPack(const nlohmann::json &json) {
         int res = send(server, buf+len-sum, sum, 0);
         if (res > 0) sum-=res;
         else {
-            MessageBoxA(NULL, "å‘é€é”™è¯¯", "", MB_OK);
+            MessageBox(NULL, "·¢ËÍ´íÎó", "", MB_OK);
         }
     }
 

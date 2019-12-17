@@ -7,7 +7,7 @@ public:
 	void refresh();
 public:
 	int FindMyMem(int& nSel, POSITION& pos);
-	enum { IDD = IDD_DIALOG1 };
+	enum { IDD = IDD_ALLMEM };
 	CListCtrl	m_list;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);

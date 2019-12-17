@@ -109,7 +109,7 @@ void DataBase::clearSchedule() {
 
 void DataBase::loadSchedules() {
 	CMemApp* pApp = (CMemApp*)AfxGetApp();
-
+	pApp->m_memList.RemoveAll();
     DataBase::traverseSchedule([&pApp](const Schedule& sch){
         Schedule *sch2 = new Schedule(sch);
         schedules.push_back(sch2);
@@ -158,9 +158,12 @@ void DataBase::sync() {
             delete remote_sch;//直接在原来的基础上赋值，这个就可以释放了。如果没找到相同sid的，就不能释放，因为要用
         } else {//没找到
             schedules.push_back(remote_sch);
-            DataBase::editSchedule(sid, *remote_sch);
+			DataBase::addSchedule(*remote_sch);
         }
     }
+
+	CMemApp* pApp = (CMemApp*)AfxGetApp();
+	pApp->m_memList.RemoveAll();
 }
 
 void DataBase::sync_add(const Schedule &schedule) {

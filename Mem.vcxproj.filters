@@ -63,6 +63,9 @@
     <ClCompile Include="Essentials\Timer.cpp">
       <Filter>Source Files\Kernel</Filter>
     </ClCompile>
+    <ClCompile Include="LoginDlg.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbooutMe.h">
@@ -109,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="Utils\Utils.h">
       <Filter>Header Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginDlg.h">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
