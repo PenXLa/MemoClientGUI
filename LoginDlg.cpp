@@ -9,6 +9,7 @@
 #include <string>
 #include "Essentials/ClientDataBase.h"
 #include "AllMem.h"
+#include "RegisterDlg.h"
 
 
 // LoginDlg 对话框
@@ -37,6 +38,7 @@ void LoginDlg::DoDataExchange(CDataExchange* pDX)
 // LoginDlg 消息处理程序
 BEGIN_MESSAGE_MAP(LoginDlg, CDialogEx)
 	ON_BN_CLICKED(IDLOGIN, &LoginDlg::OnBnClickedLogin)
+	ON_BN_CLICKED(IDC_REG, &LoginDlg::OnBnClickedReg)
 END_MESSAGE_MAP()
 
 
@@ -60,4 +62,12 @@ void LoginDlg::OnBnClickedLogin()
 	else {
 		MessageBox(res["reason"].get<std::string>().c_str(), "登录失败",0);
 	}
+}
+
+
+
+void LoginDlg::OnBnClickedReg()
+{
+	RegisterDlg dlg;
+	dlg.DoModal();
 }

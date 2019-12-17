@@ -127,7 +127,6 @@ void DataBase::sync() {
         req["schs"].push_back(schedule2json(*sch));//发送本地的事项
 
     auto res = request(req);
-    auto a= res.dump();
     for (nlohmann::json &jsch:res["schs"]) {
         Schedule *local_sch= nullptr;
         unsigned int sid = jsch["sid"].get<unsigned int>();

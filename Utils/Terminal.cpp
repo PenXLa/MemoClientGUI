@@ -64,7 +64,6 @@ void tui() {
             req["name"] = "register";
             req["pwd"] = pwd;
             auto res = request(req);
-            auto a=res.dump();
             cout << "Register completed. Your id is " << res["uid"].get<int>() << '\n';
         } else if (cmd == 6) {
             cout << "Input your id:"; cin >> uid;
