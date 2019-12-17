@@ -44,9 +44,9 @@ BOOL CMemApp::InitInstance()
 }
 
 
-CString CMemApp::TimetoCString(CTime& date, CTime& time)
+CString CMemApp::TimetoCString(const CTime& date)
 {
 	char str[30];
-	sprintf(str, "%d年%d月%d日 %d:%02d", date.GetYear(), date.GetMonth(), date.GetDay(), time.GetHour(), time.GetMinute());
+	sprintf(str, "%d年%d月%d日 %d:%02d", date.GetYear(), date.GetMonth(), date.GetDay(), date.GetHour(), date.GetMinute());
 	return (CString)str;
 }

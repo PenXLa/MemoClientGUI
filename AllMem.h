@@ -6,7 +6,7 @@ public:
 	CAllMem(CWnd* pParent = NULL);
 	void refresh();
 public:
-	int FindMyMem(int& nSel, POSITION& pos);
+	Schedule* FindMyMem(int &nSel);
 	enum { IDD = IDD_ALLMEM };
 	CListCtrl	m_list;
 protected:

@@ -17,7 +17,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-CMemDlg::CMemDlg(CMyMem* mem)
+CMemDlg::CMemDlg(Schedule* mem)
 	: CDialog(CMemDlg::IDD, NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -52,9 +52,9 @@ BOOL CMemDlg::OnInitDialog()
 	
 
 	if (mem) {
-		m_date.SetTime(&mem->m_TDate);
-		m_time.SetTime(&mem->m_Time);
-		m_body.SetWindowText(mem->m_strBody);
+		m_date.SetTime(&CTime(mem->endTime));
+		m_time.SetTime(&CTime(mem->endTime));
+		m_body.SetWindowText(CString(mem->name));
 	}
 	return TRUE;
 }
@@ -107,7 +107,7 @@ void CMemDlg::OnBnClickedEditOk()
 
 
 
-	tm ddl; Schedule *sch = mem ? mem->sch : new Schedule;
+	tm ddl; Schedule *sch = mem ? mem : new Schedule;
 
 	strcpy(sch->name, ((std::string)mm_body.GetBuffer()).c_str());
 	ddl.tm_year = mm_date.GetYear();
@@ -130,25 +130,6 @@ void CMemDlg::OnBnClickedEditOk()
 		if (loggedin) DataBase::sync_add(*sch);//服务器同步
 	}
 
-
-
-	CMyMem* pMem = new CMyMem;
-
-	pMem->m_TDate = mm_date;
-	pMem->m_strBody = mm_body;
-	pMem->m_Time = mm_time;
-	pMem->sch = sch;
-	if (mem)
-	{
-		POSITION pos;
-		pos = pApp->m_pos;
-		pApp->m_memList.SetAt(pos, pMem);
-	}
-	else
-	{
-		pApp->m_memList.AddTail(pMem);
-		pApp->m_pos = pApp->m_memList.GetTailPosition();
-	}
 
 
 	m_body.SetModify(FALSE);

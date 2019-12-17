@@ -84,20 +84,17 @@ BOOL CAllMem::OnInitDialog()
 }
 
 void CAllMem::refresh() {
-	WORD nCount;
-	POSITION pos;
 	CString my_date;
 	CMemApp* pApp = (CMemApp*)AfxGetApp();
-	nCount = (WORD)pApp->m_memList.GetCount();
-	pos = pApp->m_memList.GetHeadPosition();
 	m_list.DeleteAllItems();
-	for (int k = 0; k < nCount && pos != NULL; k++)
+	int k = 0;
+	for (Schedule* sch:schedules)
 	{
-		CMyMem* pMem = pApp->m_memList.GetNext(pos);
 		m_list.InsertItem(k, LPSTR_TEXTCALLBACK);
-		my_date = pApp->TimetoCString(pMem->m_TDate, pMem->m_Time);
+		my_date = pApp->TimetoCString(CTime(sch->endTime));
 		m_list.SetItemText(k, 0, my_date);
-		m_list.SetItemText(k, 1, pMem->m_strBody);
+		m_list.SetItemText(k, 1, CString(sch->name));
+		++k;
 	}
 }
 
@@ -106,20 +103,14 @@ void CAllMem::OnButtonDel()
 	int nSel;
 	POSITION pos;
 	CMemApp* pApp = (CMemApp*)AfxGetApp();
-	if (FindMyMem(nSel, pos))
+	Schedule *sch;
+	if (sch =FindMyMem(nSel))
 	{
-		CMyMem* pMem = pApp->m_memList.GetAt(pos);
-		for (auto p = schedules.begin(); p != schedules.end(); ++p) {
-			if ((*p)->sid == pMem->sch->sid) {
-				DataBase::removeSchedule(pMem->sch->sid);//数据库清除
-				delete(*p);//内存释放
-				schedules.erase(p);//链表中除名
-				break;
-			}
-		}
-		if (loggedin)DataBase::sync_remove(pMem->sch->sid);//同步
+		DataBase::removeSchedule(sch->sid);//数据库清除
+		delete(sch);//内存释放
+		schedules.remove(sch);//链表中除名
+		if (loggedin)DataBase::sync_remove(sch->sid);//同步
 
-		pApp->m_memList.RemoveAt(pos);
 		m_list.DeleteItem(nSel);
 	}
 	else
@@ -128,7 +119,7 @@ void CAllMem::OnButtonDel()
 	}
 }
 
-int CAllMem::FindMyMem(int& nSel, POSITION& pos)
+Schedule* CAllMem::FindMyMem(int &nSel)
 {
 	CMemApp* pApp = (CMemApp*)AfxGetApp();
 	POSITION pos1 = m_list.GetFirstSelectedItemPosition();
@@ -140,10 +131,10 @@ int CAllMem::FindMyMem(int& nSel, POSITION& pos)
 	else
 	{
 		nSel = m_list.GetNextSelectedItem(pos1);
+		auto p = schedules.begin();
+		for (int i = 0; i < nSel; ++i) ++p;
+		return *p;
 	}
-	pos = pApp->m_memList.FindIndex(nSel);
-	ASSERT(pos != NULL);
-	return 1;
 }
 
 void CAllMem::OnOK()
@@ -158,11 +149,8 @@ void CAllMem::OnOK()
 	}
 	else
 	{
-		nSel = m_list.GetNextSelectedItem(pos1);
-		pos = pApp->m_memList.FindIndex(nSel);
-		pApp->m_pos = pos;
-		
-		CMemDlg dlg(pApp->m_memList.GetAt(pos));
+		int nSel;
+		CMemDlg dlg(FindMyMem(nSel));
 		if (IDOK == dlg.DoModal())
 			refresh();
 	}
@@ -176,7 +164,6 @@ void CAllMem::OnCancel()
 void CAllMem::OnButtonRemoveall()
 {
 	CMemApp* pApp = (CMemApp*)AfxGetApp();
-	pApp->m_memList.RemoveAll();
 	m_list.DeleteAllItems();
 
 	DataBase::clearSchedule();

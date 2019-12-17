@@ -108,19 +108,10 @@ void DataBase::clearSchedule() {
 }
 
 void DataBase::loadSchedules() {
-	CMemApp* pApp = (CMemApp*)AfxGetApp();
-	pApp->m_memList.RemoveAll();
-    DataBase::traverseSchedule([&pApp](const Schedule& sch){
+	schedules.clear();
+    DataBase::traverseSchedule([](const Schedule& sch){
         Schedule *sch2 = new Schedule(sch);
         schedules.push_back(sch2);
-
-		CMyMem* pMem = new CMyMem;
-		pMem->m_TDate = CTime(sch2->endTime);
-		pMem->m_Time = CTime(sch2->endTime);
-		pMem->m_strBody = (CString)sch2->name;
-		pMem->sch = sch2;
-		pApp->m_memList.AddTail(pMem);
-
         return true;
     });
 }
@@ -161,9 +152,6 @@ void DataBase::sync() {
 			DataBase::addSchedule(*remote_sch);
         }
     }
-
-	CMemApp* pApp = (CMemApp*)AfxGetApp();
-	pApp->m_memList.RemoveAll();
 }
 
 void DataBase::sync_add(const Schedule &schedule) {
