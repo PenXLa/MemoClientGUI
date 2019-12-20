@@ -8,7 +8,6 @@
 #define IDD_MEM_DIALOG                  102
 #define IDR_MAINFRAME                   128
 #define IDD_ALLMEM                      131
-#define IDD_DIALOG_ABOUT                133
 #define IDR_TOOLBAR_MIAN                139
 #define IDD_LOGIN                       145
 #define IDD_REGISTER                    147

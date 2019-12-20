@@ -53,15 +53,21 @@ void LoginDlg::OnBnClickedLogin()
 	req["name"] = "login";
 	req["pwd"] = passwd;
 	req["uid"] = uid;
-	auto res = request(req);
-	if (res["success"].get<bool>()) {
-		loggedin = true;
-		DataBase::sync();
-		CDialog::OnOK();
+	try {
+		auto res = request(req);
+		if (res["success"].get<bool>()) {
+			loggedin = true;
+			DataBase::sync();
+			CDialog::OnOK();
+		}
+		else {
+			MessageBox(res["reason"].get<std::string>().c_str(), "登录失败", 0);
+		}
 	}
-	else {
-		MessageBox(res["reason"].get<std::string>().c_str(), "登录失败",0);
+	catch (...) {
+		MessageBox("无法连接到服务器", "错误", 0);
 	}
+	
 }
 
 

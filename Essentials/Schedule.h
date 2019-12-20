@@ -20,6 +20,7 @@ public:
 };
 
 extern std::list<Schedule*> schedules;
+extern Schedule* earliestSch;
 
 
 #endif //MEMOCLIENT_SCHEDULE_H

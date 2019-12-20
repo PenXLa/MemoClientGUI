@@ -8,6 +8,7 @@
 #include "../Utils/Utils.h"
 #include "../stdafx.h"
 #include "../Mem.h"
+#include "Timer.h"
 
 int uid = 0;
 std::string passwd;
@@ -114,6 +115,7 @@ void DataBase::loadSchedules() {
         schedules.push_back(sch2);
         return true;
     });
+	selectEarliest();
 }
 
 //双向同步，互相填补对方没有的schedule
@@ -126,31 +128,36 @@ void DataBase::sync() {
     for (Schedule *sch:schedules)
         req["schs"].push_back(schedule2json(*sch));//发送本地的事项
 
-    auto res = request(req);
-    for (nlohmann::json &jsch:res["schs"]) {
-        Schedule *local_sch= nullptr;
-        unsigned int sid = jsch["sid"].get<unsigned int>();
+	try {
+		auto res = request(req);
+		for (nlohmann::json &jsch:res["schs"]) {
+			Schedule *local_sch= nullptr;
+			unsigned int sid = jsch["sid"].get<unsigned int>();
 
-        //在本地寻找相同sid的事项
-        for (Schedule* sch : schedules)
-            if (sch->sid == sid){
-                local_sch = sch;
-                break;
-            }
+			//在本地寻找相同sid的事项
+			for (Schedule* sch : schedules)
+				if (sch->sid == sid){
+					local_sch = sch;
+					break;
+				}
 
-        Schedule *remote_sch = json2Schedule(jsch);
-        //找到了
-        if (local_sch) {
-            if (local_sch->lastEdit < remote_sch->lastEdit || (local_sch->lastEdit == remote_sch->lastEdit && remote_sch->alerted && !local_sch->alerted)) {
-                *local_sch = *remote_sch;
-                DataBase::editSchedule(sid, *remote_sch);
-            }
-            delete remote_sch;//直接在原来的基础上赋值，这个就可以释放了。如果没找到相同sid的，就不能释放，因为要用
-        } else {//没找到
-            schedules.push_back(remote_sch);
-			DataBase::addSchedule(*remote_sch);
-        }
-    }
+			Schedule *remote_sch = json2Schedule(jsch);
+			//找到了
+			if (local_sch) {
+				if (local_sch->lastEdit < remote_sch->lastEdit || (local_sch->lastEdit == remote_sch->lastEdit && remote_sch->alerted && !local_sch->alerted)) {
+					*local_sch = *remote_sch;
+					DataBase::editSchedule(sid, *remote_sch);
+				}
+				delete remote_sch;//直接在原来的基础上赋值，这个就可以释放了。如果没找到相同sid的，就不能释放，因为要用
+			} else {//没找到
+				schedules.push_back(remote_sch);
+				DataBase::addSchedule(*remote_sch);
+			}
+			selectEarliest();
+		}
+	}
+	catch (...) {}
+    
 }
 
 void DataBase::sync_add(const Schedule &schedule) {
@@ -159,7 +166,8 @@ void DataBase::sync_add(const Schedule &schedule) {
     req["uid"] = uid;
     req["pwd"] = passwd;
     req["schedule"] = schedule2json(schedule);
-    request(req);
+	try {request(req);} catch(...){}
+    
 }
 
 void DataBase::sync_remove(unsigned int sid) {
@@ -168,7 +176,8 @@ void DataBase::sync_remove(unsigned int sid) {
     req["uid"] = uid;
     req["pwd"] = passwd;
     req["sid"] = sid;
-    request(req);
+	try { request(req); }
+	catch (...) {}
 }
 void DataBase::sync_edit(unsigned sid, const Schedule &schedule) {
     nlohmann::json req;
@@ -177,7 +186,8 @@ void DataBase::sync_edit(unsigned sid, const Schedule &schedule) {
     req["pwd"] = passwd;
     req["schedule"] = schedule2json(schedule);
     req["sid"] = sid;
-    request(req);
+	try { request(req); }
+	catch (...) {}
 }
 
 void DataBase::sync_clear() {
@@ -185,5 +195,6 @@ void DataBase::sync_clear() {
     req["name"] = "clearSchedule";
     req["uid"] = uid;
     req["pwd"] = passwd;
-    request(req);
+	try { request(req); }
+	catch (...) {}
 }

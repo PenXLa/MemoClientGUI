@@ -6,6 +6,7 @@
 #include <list>
 #include <functional>
 #include <string>
+
 extern int uid;
 extern std::string passwd;
 extern bool loggedin;

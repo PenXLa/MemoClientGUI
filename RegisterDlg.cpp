@@ -46,10 +46,16 @@ void RegisterDlg::OnBnClickedOk()
 	nlohmann::json req;
 	req["name"] = "register";
 	req["pwd"] = (std::string)(pwd.GetBuffer(0));
-	auto res = request(req);
+	try {
+		auto res = request(req);
 
-	char msg[50];
-	sprintf_s(msg, "您的账号是：%d", res["uid"].get<int>());
-	MessageBox(msg ,0);
-	CDialogEx::OnOK();
+		char msg[50];
+		sprintf_s(msg, "您的账号是：%d", res["uid"].get<int>());
+		MessageBox(msg, 0);
+		CDialogEx::OnOK();
+	}
+	catch (...) {
+		MessageBox("无法连接到服务器", "错误", 0);
+	}
+	
 }

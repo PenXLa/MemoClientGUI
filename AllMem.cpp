@@ -11,7 +11,7 @@
 #include "Essentials/ClientDataBase.h"
 #include "Net/ClientNetUtils.h"
 #include "JSONLib/json.hpp"
-
+#include "Essentials/Timer.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -49,6 +49,7 @@ BOOL CAllMem::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	requestLogin();
+	startTimer();
 
 	m_list.SetBkColor(RGB(255, 255, 255));
 	m_list.SetTextBkColor(RGB(200, 200, 0));
@@ -108,7 +109,7 @@ void CAllMem::OnButtonDel()
 	{
 		DataBase::removeSchedule(sch->sid);//数据库清除
 		delete(sch);//内存释放
-		schedules.remove(sch);//链表中除名
+		schedules.remove(sch);/*链表中除名*/selectEarliest();
 		if (loggedin)DataBase::sync_remove(sch->sid);//同步
 
 		m_list.DeleteItem(nSel);
@@ -167,7 +168,7 @@ void CAllMem::OnButtonRemoveall()
 	m_list.DeleteAllItems();
 
 	DataBase::clearSchedule();
-	schedules.clear();
+	schedules.clear(); selectEarliest();
 	if (loggedin) DataBase::sync_clear();
 }
 

@@ -7,5 +7,6 @@
 
 
 void startTimer();
+void selectEarliest();
 
 #endif //MEMOCLIENT_TIMER_H

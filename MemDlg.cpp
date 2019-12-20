@@ -2,7 +2,6 @@
 #include "Mem.h"
 #include "MemDlg.h"
 #include "AllMem.h"
-#include "AbooutMe.h"
 
 #include <iostream>
 #include <string>
@@ -10,6 +9,7 @@
 #include "Essentials/ClientDataBase.h"
 #include "Net/ClientNetUtils.h"
 #include "JSONLib/json.hpp"
+#include "Essentials/Timer.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -129,7 +129,7 @@ void CMemDlg::OnBnClickedEditOk()
 		DataBase::addSchedule(*sch);//放到文件中
 		if (loggedin) DataBase::sync_add(*sch);//服务器同步
 	}
-
+	selectEarliest();
 
 
 	m_body.SetModify(FALSE);

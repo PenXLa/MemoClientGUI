@@ -6,7 +6,6 @@
 #include <iostream>
 #include "JSONLib/json.hpp"
 #include "Net/ClientNetUtils.h"
-#include "Utils/Terminal.h"
 #include "Essentials/Timer.h"
 #include "Essentials/ClientDataBase.h"
 
@@ -31,7 +30,6 @@ BOOL CMemApp::InitInstance()
 {
 	if (!initSocket()) MessageBox(0,"Socket初始化失败，网络功能将无法使用。","计划安排提醒",0);
 	DataBase::loadSchedules();
-	startTimer();
 
 
 	AfxEnableControlContainer();

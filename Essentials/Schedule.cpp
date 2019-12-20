@@ -7,6 +7,7 @@
 #include <ctime>
 #include <chrono>
 std::list<Schedule*> schedules;
+Schedule* earliestSch = NULL;
 
 std::time_t getTimeStamp() {
     std::chrono::time_point<std::chrono::system_clock,std::chrono::milliseconds> tp = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
